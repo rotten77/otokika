@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otokika - Motion-triggered sounds with your webcam</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Otokika <span class="subtitle">Motion-triggered sounds with your webcam</span></h1>
+        
+        <div class="camera-controls">
+            <select id="cameraSelect" class="camera-select">
+                <option value="">Loading cameras...</option>
+            </select>
+            <div class="camera-options">
+                <label>
+                    <input type="checkbox" id="flipCamera"> Flip Horizontally
+                </label>
+                <button id="addTriggerBtn" class="btn">+ Add Trigger</button>
+            </div>
+        </div>
+
+        <div class="recording-controls">
+            <button id="recordButton" class="btn record-btn">Start Recording</button>
+            <button id="exportButton" class="btn export-btn" disabled>Export Audio</button>
+            <span id="recordingStatus" class="recording-status">Not Recording</span>
+        </div>
+        
+        <div class="camera-container">
+            <video id="cameraView" autoplay playsinline></video>
+            <canvas id="canvasOverlay"></canvas>
+        </div>
+        
+        <div id="triggerConfig" class="trigger-config">
+            <h3>Trigger Configuration</h3>
+            <div class="form-group">
+                <label for="soundFile">Sound File (WAV/MP3):</label>
+                <input type="file" id="soundFile" accept=".wav,.mp3">
+                <div id="currentSound" class="current-sound">No sound selected</div>
+                <button id="testSoundBtn" class="btn btn-small">Test Sound</button>
+            </div>
+            <div class="form-group">
+                <label for="circleSize">Circle Size: <span id="circleSizeValue">100</span>px</label>
+                <input type="range" id="circleSizeRadius" min="20" max="200" value="100">
+            </div>
+
+            <div class="form-group">
+                <label for="thresholdSlider">Motion Threshold: <span id="thresholdValue">50</span>%</label>
+                <input type="range" id="thresholdSlider" min="1" max="100" value="50">
+            </div>
+            <div class="form-group">
+                <label for="cooldownInput">Cooldown: <span id="cooldownValue">1</span> seconds</label>
+                <input type="range" id="cooldownInput" min="0.1" max="10" step="0.1" value="1">
+            </div>
+
+            <button id="deleteTriggerBtn" class="btn btn-delete">Delete Trigger</button>
+        </div>
+
+        <div class="description">
+            <h3>Instructions</h3>
+            <ol>
+                <li>Allow camera access when prompted</li>
+                <li>Click "Add Trigger" to create a circular motion detection area</li>
+                <li>Click on a trigger to select it and configure settings</li>
+                <li>Upload a sound file to play when motion is detected</li>
+                <li>Adjust the size, motion threshold and cooldown time as needed
+                    <ul>
+                    <li>Motion threshold: This defines how much movement is needed before the trigger activates.</li>
+                    <li>Cooldown time: Think of it as a short pause or recovery time to prevent overlapping sounds or accidental rapid re-triggers.</li>
+                </ul>
+                </li>
+
+                <li>To delete a trigger, select it and press the Delete key</li>
+            </ol>
+        </div>
+
+
+        <div class="description">
+            <h3>Brought to life through collaboration and creativity</h3>
+            <ul>
+                <li><strong><em>Author of the Idea:</em> <a href="https://rotten77.cz/">rotten77</a></strong><br/>Visionary mind behind the concept, igniting the spark that set this project in motion.</li>
+                <li><strong><em>Code Generator:</em> <a href="https://claude.ai/new">Claude</a></strong><br/>The digital artisan weaving code into functionality, bringing the app to life with precision and elegance.</li>
+                <li><strong><em>Definition Revisor:</em> <a href="https://chatgpt.com/">ChatGPT</a></strong><br/>Crafted clarity and refined the foundation — turning raw ideas into a solid blueprint.</li>
+              
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>GitHub: <a href="https://github.com/rotten77/otokika/">rotten77/otokika</a></p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script src="motion.js"></script>
+    <script src="ui.js"></script>
+</body>
+</html>
