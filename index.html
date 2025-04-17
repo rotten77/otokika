@@ -22,40 +22,39 @@
             </div>
         </div>
 
-        <div class="recording-controls">
-            <button id="recordButton" class="btn record-btn">Start Recording</button>
-            <button id="exportButton" class="btn export-btn" disabled>Export Audio</button>
-            <span id="recordingStatus" class="recording-status">Not Recording</span>
+        <div id="triggerConfig" class="trigger-config">
+            <div class="trigger-controls">
+                <div class="control-group">
+                    <label for="soundFile">Sound:</label>
+                    <input type="file" id="soundFile" accept=".wav,.mp3">
+                    <div id="currentSound" class="current-sound">No sound selected</div>
+                    <button id="testSoundBtn" class="btn btn-small">Test</button>
+                </div>
+                <div class="control-group">
+                    <label for="circleSizeRadius">Size: <span id="circleSizeValue">100</span>px</label>
+                    <input type="range" id="circleSizeRadius" min="20" max="200" value="100">
+                </div>
+                <div class="control-group">
+                    <label for="thresholdSlider">Threshold: <span id="thresholdValue">50</span>%</label>
+                    <input type="range" id="thresholdSlider" min="1" max="100" value="50">
+                </div>
+                <div class="control-group">
+                    <label for="cooldownInput">Cooldown: <span id="cooldownValue">1</span>s</label>
+                    <input type="range" id="cooldownInput" min="0.1" max="10" step="0.1" value="1">
+                </div>
+                <button id="deleteTriggerBtn" class="btn btn-delete">Delete</button>
+            </div>
         </div>
         
         <div class="camera-container">
             <video id="cameraView" autoplay playsinline></video>
             <canvas id="canvasOverlay"></canvas>
         </div>
-        
-        <div id="triggerConfig" class="trigger-config">
-            <h3>Trigger Configuration</h3>
-            <div class="form-group">
-                <label for="soundFile">Sound File (WAV/MP3):</label>
-                <input type="file" id="soundFile" accept=".wav,.mp3">
-                <div id="currentSound" class="current-sound">No sound selected</div>
-                <button id="testSoundBtn" class="btn btn-small">Test Sound</button>
-            </div>
-            <div class="form-group">
-                <label for="circleSize">Circle Size: <span id="circleSizeValue">100</span>px</label>
-                <input type="range" id="circleSizeRadius" min="20" max="200" value="100">
-            </div>
 
-            <div class="form-group">
-                <label for="thresholdSlider">Motion Threshold: <span id="thresholdValue">50</span>%</label>
-                <input type="range" id="thresholdSlider" min="1" max="100" value="50">
-            </div>
-            <div class="form-group">
-                <label for="cooldownInput">Cooldown: <span id="cooldownValue">1</span> seconds</label>
-                <input type="range" id="cooldownInput" min="0.1" max="10" step="0.1" value="1">
-            </div>
-
-            <button id="deleteTriggerBtn" class="btn btn-delete">Delete Trigger</button>
+        <div class="recording-controls">
+            <button id="recordButton" class="btn record-btn">Start Recording</button>
+            <button id="exportButton" class="btn export-btn" disabled>Export Audio</button>
+            <span id="recordingStatus" class="recording-status">Not Recording</span>
         </div>
 
         <div class="description">

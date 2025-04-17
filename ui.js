@@ -114,6 +114,8 @@ class UI {
         exportButton.addEventListener('click', () => {
             this.app.exportRecording();
         });
+
+        this.updateTriggerConfig();
     }
 
     onCanvasMouseDown(e) {
@@ -242,7 +244,7 @@ class UI {
     }
 
     updateTriggerConfig() {
-        const configPanel = document.getElementById('triggerConfig');
+        const triggerControls = document.querySelector('.trigger-controls');
         const thresholdSlider = document.getElementById('thresholdSlider');
         const thresholdValue = document.getElementById('thresholdValue');
         const circleSizeSlider = document.getElementById('circleSizeRadius');
@@ -251,10 +253,23 @@ class UI {
         const cooldownValue = document.getElementById('cooldownValue');
         const currentSound = document.getElementById('currentSound');
         const testSoundBtn = document.getElementById('testSoundBtn');
+        const soundFileInput = document.getElementById('soundFile');
+        const deleteTriggerBtn = document.getElementById('deleteTriggerBtn');
+        
+        // Get all form elements in the triggerConfig
+        const formElements = [
+            thresholdSlider, 
+            circleSizeSlider, 
+            cooldownInput, 
+            soundFileInput, 
+            testSoundBtn, 
+            deleteTriggerBtn
+        ];
         
         if (this.app.selectedTrigger) {
-            // Show config panel
-            configPanel.style.display = 'block';
+            // Enable all form controls
+            formElements.forEach(el => el.disabled = false);
+            triggerControls.classList.remove('disabled');
             
             // Update threshold slider
             thresholdSlider.value = this.app.selectedTrigger.threshold;
@@ -278,8 +293,15 @@ class UI {
                 testSoundBtn.disabled = true;
             }
         } else {
-            // Hide config panel if no trigger selected
-            configPanel.style.display = 'none';
+            // Disable all form controls
+            formElements.forEach(el => el.disabled = true);
+            triggerControls.classList.add('disabled');
+            
+            // Reset to default values for visual consistency
+            thresholdValue.textContent = thresholdSlider.value;
+            circleSizeValue.textContent = circleSizeSlider.value;
+            cooldownValue.textContent = parseFloat(cooldownInput.value).toFixed(1);
+            currentSound.textContent = 'No trigger selected';
         }
     }
 

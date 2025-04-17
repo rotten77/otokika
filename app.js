@@ -41,6 +41,9 @@ class App {
             
             // Handle canvas resizing
             window.addEventListener('resize', () => this.resizeCanvas());
+
+            // Show the trigger config now that everything is loaded
+        document.getElementById('triggerConfig').classList.add('loaded');
         } catch (error) {
             console.error('Initialization error:', error);
             alert('Error initializing the application: ' + error.message);
