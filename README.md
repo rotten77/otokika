@@ -7,14 +7,12 @@ Turn your webcam into an interactive sound board. Draw triggers, assign sounds, 
 
 ## Instructions
 
-1. Allow camera access when prompted
-1. Click "Add Trigger" to create a circular motion detection area
-1. Click on a trigger to select it and configure settings
-1. Upload a sound file to play when motion is detected
-1. Adjust the size, motion threshold and cooldown time as needed
-    * Motion threshold: This defines how much movement is needed before the trigger activates.
-    * Cooldown time: Think of it as a short pause or recovery time to prevent overlapping sounds or accidental rapid re-triggers.
-2. To delete a trigger, select it and press the Delete key
+* Allow camera access when prompted
+* Click "Add Trigger" to create a circular motion detection area
+* Click on a trigger to select it and configure settings
+* Upload a sound file to play when motion is detected
+* Adjust the size, motion threshold and cooldown time as needed
+
 
 ## Brought to life through collaboration and creativity
 Otokika:

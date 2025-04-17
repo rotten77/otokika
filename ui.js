@@ -73,10 +73,40 @@ class UI {
         
 
         
-        // Keyboard delete key for selected trigger
+        // Keyboard shortcuts for trigger actions
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Delete' && this.app.selectedTrigger) {
+            // Ignore keyboard shortcuts if user is typing in an input field
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            // Delete trigger with Delete key, Backspace key, or 'D' key
+            if ((e.key === 'Delete' || e.key === 'Backspace' || e.key.toUpperCase() === 'D') && this.app.selectedTrigger) {
                 this.app.deleteTrigger(this.app.selectedTrigger);
+            }
+            
+            // Add trigger with 'A' key
+            if (e.key.toUpperCase() === 'A') {
+                const canvasRect = this.canvas.getBoundingClientRect();
+                const x = canvasRect.width / 2;
+                const y = canvasRect.height / 2;
+                this.app.addTrigger(x, y);
+            }
+            
+            // Toggle recording with 'S' key
+            if (e.key.toUpperCase() === 'S') {
+                if (this.app.isRecording) {
+                    this.app.stopRecording();
+                } else {
+                    this.app.startRecording();
+                }
+                e.preventDefault(); // Prevent 's' from being typed in any text field
+            }
+            
+            // Export recording with 'E' key
+            if (e.key.toUpperCase() === 'E') {
+                this.app.exportRecording();
+                e.preventDefault();
             }
         });
 
