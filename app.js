@@ -10,6 +10,7 @@ class App {
         this.context = this.canvas.getContext('2d');
         this.motionDetector = new MotionDetector(this);
         this.ui = new UI(this);
+        this.audioExporter = new AudioExporter();
 
         // Recording properties
         this.isRecording = false;
@@ -476,23 +477,8 @@ class App {
         }
         
         try {
-            // Create a blob from the recording chunks
-            const blob = new Blob(this.recordedChunks, { type: 'audio/webm' });
-            console.log("Created blob of size:", blob.size);
-            
-            // Create a download link
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.createElement('a');
-            downloadLink.href = url;
-            downloadLink.download = 'otokika-recording-' + new Date().toISOString().replace(/[:.]/g, '-') + '.webm';
-            
-            // Add to DOM, click, and remove
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-            
-            // Clean up
-            URL.revokeObjectURL(url);
+            // Use the audio exporter to export as WAV with WEBM fallback
+            this.audioExporter.exportAudio(this.recordedChunks, 'otokika-recording');
         } catch (error) {
             console.error('Error exporting recording:', error);
             alert('Error exporting recording: ' + error.message);
