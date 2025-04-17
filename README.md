@@ -1,4 +1,4 @@
-# Otokika
+# Otokika - Let nature play
 
 Turn your webcam into an interactive sound board. Draw triggers, assign sounds, and let motion do the rest.
 
