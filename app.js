@@ -350,6 +350,14 @@ class App {
             
             // Set last played timestamp
             trigger.lastPlayed = now;
+            
+            // Redraw triggers to show active state
+            this.ui.drawTriggers();
+            
+            // Create a timeout to redraw again after the active state period
+            setTimeout(() => {
+                this.ui.drawTriggers();
+            }, 300); // Match the duration in UI.drawTriggers
         } catch (error) {
             console.error('Error playing sound:', error);
         }

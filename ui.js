@@ -243,8 +243,21 @@ class UI {
         for (const trigger of this.app.triggers) {
             this.context.beginPath();
             this.context.arc(trigger.x, trigger.y, trigger.radius, 0, Math.PI * 2);
-            this.context.strokeStyle = trigger === this.app.selectedTrigger ? '#ffff00' : '#ff0000';
-            this.context.lineWidth = trigger === this.app.selectedTrigger ? 3 : 2;
+            
+            // Change color if the trigger is active (playing a sound)
+            const now = Date.now();
+            const isActive = trigger.lastPlayed && (now - trigger.lastPlayed < 300); // Show active state for 300ms
+            
+            if (isActive) {
+                // Active color - green
+                this.context.strokeStyle = '#3ce76f';
+            } else {
+                // Normal color - yellow for selected, red for normal
+                this.context.strokeStyle = trigger === this.app.selectedTrigger ? '#ffff00' : '#ff0000';
+            }
+            
+            // Make the border twice as bold - changed from 2/3 to 4/6
+            this.context.lineWidth = trigger === this.app.selectedTrigger ? 6 : 4;
             this.context.stroke();
             
             // Add sound name if available
