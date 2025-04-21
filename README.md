@@ -1,6 +1,6 @@
-# Otokika - Let nature play
+# Otokika - motion-triggered music sampler
 
-Turn your webcam into an interactive sound board. Draw triggers, assign sounds, and let motion do the rest.
+Turn your webcam or videos into an interactive sound board. Draw triggers, assign sounds, and let motion do the rest.
 
 **🔗 Try it now: https://otokika.rotten77.cz**
 
@@ -13,10 +13,16 @@ Turn your webcam into an interactive sound board. Draw triggers, assign sounds, 
 * Click on a trigger to select it and configure settings
 * Upload a sound file to play when motion is detected
 * Adjust the size, motion threshold and cooldown time as needed
+* Optionally, use pre-recorded video files instead of a webcam
 
+## Using Video Files
+
+* Select "+ Add video file" from the camera dropdown to use a pre-recorded video
+* Videos will play in a continuous loop and can be used as motion sources
+* You can add multiple videos and switch between them and your webcam
+* Video files are only stored for the current session
 
 ## Brought to life through collaboration and creativity
-Otokika:
 
 * **Author of the Idea: [rotten77](https://rotten77.cz/)**<br />Visionary mind behind the concept, igniting the spark that set this project in motion.
 * **Code Generator: [Claude](https://claude.ai/new)**<br />The digital artisan weaving code into functionality, bringing the app to life with precision and elegance.

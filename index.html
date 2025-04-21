@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Otokika - webcam-based, motion-triggered music sampler</title>
-    <link rel="stylesheet" href="style.css?v=2025-04-17">
+    <title>Otokika - motion-triggered music sampler</title>
+    <link rel="stylesheet" href="style.css?v=2025-04-21">
 </head>
 <body>
     <div class="container">
-        <h1>Otokika <span class="subtitle">Let nature play</span></h1>
+        <h1>Otokika <span class="subtitle">motion-triggered music sampler</span></h1>
         
         <div class="camera-controls">
             <select id="cameraSelect" class="camera-select">
@@ -47,7 +47,7 @@
         </div>
         
         <div class="camera-container">
-            <video id="cameraView" autoplay playsinline></video>
+            <video id="cameraView" autoplay playsinline loop></video>
             <canvas id="canvasOverlay"></canvas>
         </div>
 
@@ -70,7 +70,13 @@
                     <li>Cooldown time: Think of it as a short pause or recovery time to prevent overlapping sounds or accidental rapid re-triggers.</li>
                 </ul>
                 </li>
-
+                <li>To use video files instead of webcam:
+                    <ul>
+                        <li>Select "+ Add video file" from the dropdown menu</li>
+                        <li>You can add multiple videos and switch between them and your webcam</li>
+                        <li>Videos will play in a continuous loop automatically</li>
+                    </ul>
+                </li>
                 <li>Keyboard shortcuts:
                     <ul>
                       <li><strong>A</strong> - Add a new trigger</li>
@@ -98,9 +104,9 @@
         <p>GitHub: <a href="https://github.com/rotten77/otokika/">rotten77/otokika</a></p>
     </footer>
 
-    <script src="app.js?v=2025-04-17"></script>
-    <script src="motion.js?v=2025-04-17"></script>
-    <script src="ui.js?v=2025-04-17"></script>
-    <script src="export-audio.js?v=2025-04-17"></script>
+    <script src="app.js?v=2025-04-21"></script>
+    <script src="motion.js?v=2025-04-21"></script>
+    <script src="ui.js?v=2025-04-21"></script>
+    <script src="export-audio.js?v=2025-04-21"></script>
 </body>
 </html>

@@ -11,7 +11,9 @@ class App {
         this.motionDetector = new MotionDetector(this);
         this.ui = new UI(this);
         this.audioExporter = new AudioExporter();
-
+        this.videoFiles = []; // Array to store multiple video files
+        this.lastSelectedValue = null; // Track the last selected input source
+        
         // Recording properties
         this.isRecording = false;
         this.audioContext = null;
@@ -35,40 +37,198 @@ class App {
             // Start camera with first available device
             if (this.videoDevices && this.videoDevices.length > 0) {
                 await this.startCamera(this.videoDevices[0].deviceId);
+                // Store this as the last selected value
+                this.lastSelectedValue = this.videoDevices[0].deviceId;
+                // Select the first camera in the dropdown
+                const cameraSelect = document.getElementById('cameraSelect');
+                cameraSelect.value = this.videoDevices[0].deviceId;
             }
             
             // Setup event listeners
             this.ui.setupEventListeners();
             
+            // Setup video file input handler
+            this.setupVideoFileInput();
+            
+            // Setup progress bar for video/camera
+            this.setupProgressBar();
+            
             // Handle canvas resizing
             window.addEventListener('resize', () => this.resizeCanvas());
 
             // Show the trigger config now that everything is loaded
-        document.getElementById('triggerConfig').classList.add('loaded');
+            document.getElementById('triggerConfig').classList.add('loaded');
+            
+            // Ensure video always loops
+            this.setupVideoLooping();
         } catch (error) {
             console.error('Initialization error:', error);
             alert('Error initializing the application: ' + error.message);
         }
     }
+    
+    setupVideoLooping() {
+        // Ensure videos always loop
+        this.videoElement.loop = true;
+        
+        // Add event listener to handle looping issues
+        this.videoElement.addEventListener('ended', () => {
+            // If for any reason the video ends (loop fails), restart it
+            this.videoElement.currentTime = 0;
+            this.videoElement.play().catch(error => {
+                console.error('Error restarting video:', error);
+            });
+        });
+    }
+    
+    setupProgressBar() {
+        // Create progress bar container
+        const progressContainer = document.createElement('div');
+        progressContainer.className = 'progress-container';
+        
+        // Create the progress bar itself
+        const progressBar = document.createElement('div');
+        progressBar.className = 'progress-bar';
+        progressContainer.appendChild(progressBar);
+        
+        // Add to the camera container
+        const cameraContainer = document.querySelector('.camera-container');
+        cameraContainer.appendChild(progressContainer);
+        
+        // Store references
+        this.progressContainer = progressContainer;
+        this.progressBar = progressBar;
+        
+        // Add timeupdate event listener to video element
+        this.videoElement.addEventListener('timeupdate', () => this.updateProgressBar());
+    }
+    
+    updateProgressBar() {
+        if (!this.progressBar) return;
+        
+        // If using camera stream, show full red bar
+        if (this.cameraStream && this.videoElement.srcObject === this.cameraStream) {
+            this.progressBar.classList.add('camera-active');
+            // Reset the width style to ensure it's not using the previous video's position
+            this.progressBar.style.width = '100%';
+        } else if (this.videoElement.src) {
+            // If using video file, show progress based on current time
+            this.progressBar.classList.remove('camera-active');
+            
+            // Calculate width percentage
+            if (this.videoElement.duration) {
+                const percentage = (this.videoElement.currentTime / this.videoElement.duration) * 100;
+                this.progressBar.style.width = percentage + '%';
+            }
+        }
+    }
+
+    setupVideoFileInput() {
+        // Create a hidden file input element for video selection
+        const videoFileInput = document.createElement('input');
+        videoFileInput.type = 'file';
+        videoFileInput.accept = 'video/*';
+        videoFileInput.style.display = 'none';
+        videoFileInput.id = 'videoFileInput';
+        document.body.appendChild(videoFileInput);
+        
+        // Handle file selection
+        videoFileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                this.handleVideoFileSelection(e.target.files[0]);
+                // Reset the input so the same file can be selected again if needed
+                videoFileInput.value = '';
+            }
+        });
+        
+        // Store reference to the element
+        this.videoFileInput = videoFileInput;
+        
+        // Handle page unload to clean up object URLs
+        window.addEventListener('beforeunload', () => {
+            // Clean up any created object URLs
+            if (this.videoFiles && this.videoFiles.length > 0) {
+                // Only release the object URL if it's from our video files
+                if (this.videoElement.src && this.videoElement.src.startsWith('blob:')) {
+                    URL.revokeObjectURL(this.videoElement.src);
+                }
+            }
+        });
+    }
 
     async setupCameras() {
         try {
+            // Track video files added by user
+            this.videoFiles = this.videoFiles || [];
+            
             const devices = await navigator.mediaDevices.enumerateDevices();
             this.videoDevices = devices.filter(device => device.kind === 'videoinput');
             
             const cameraSelect = document.getElementById('cameraSelect');
             cameraSelect.innerHTML = '';
             
-            this.videoDevices.forEach(device => {
-                const option = document.createElement('option');
-                option.value = device.deviceId;
-                option.text = device.label || `Camera ${cameraSelect.options.length + 1}`;
-                cameraSelect.appendChild(option);
-            });
+            // Add camera options first
+            if (this.videoDevices.length > 0) {
+                this.videoDevices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.text = device.label || `Camera ${cameraSelect.options.length + 1}`;
+                    cameraSelect.appendChild(option);
+                });
+            } else {
+                // No camera available
+                const noCameraOption = document.createElement('option');
+                noCameraOption.value = 'no-camera';
+                noCameraOption.text = 'No webcam found';
+                cameraSelect.appendChild(noCameraOption);
+            }
             
-            // Event listener for camera change
+            // Add separator
+            const separatorOption = document.createElement('option');
+            separatorOption.disabled = true;
+            separatorOption.text = '───────────────';
+            cameraSelect.appendChild(separatorOption);
+            
+            // Add previously loaded video files
+            if (this.videoFiles.length > 0) {
+                this.videoFiles.forEach((videoFile, index) => {
+                    const option = document.createElement('option');
+                    option.value = `video-file-${index}`;
+                    option.text = `Video: ${videoFile.name}`;
+                    cameraSelect.appendChild(option);
+                });
+            }
+            
+            // Add option to select a new video file
+            const videoFileOption = document.createElement('option');
+            videoFileOption.value = 'add-video-file';
+            videoFileOption.text = '+ Add video file';
+            cameraSelect.appendChild(videoFileOption);
+            
+            // Event listener for camera/video file change
             cameraSelect.addEventListener('change', async (e) => {
-                await this.startCamera(e.target.value);
+                if (e.target.value === 'add-video-file') {
+                    // Trigger file input when "Add video file" is chosen
+                    this.videoFileInput.click();
+                    // Revert selection to previous item to prevent showing "+ Add video file" as selected
+                    if (this.lastSelectedValue) {
+                        cameraSelect.value = this.lastSelectedValue;
+                    } else {
+                        // Default to first camera or "No webcam found"
+                        cameraSelect.selectedIndex = 0;
+                    }
+                } else if (e.target.value.startsWith('video-file-')) {
+                    // User selected a previously added video file
+                    const fileIndex = parseInt(e.target.value.split('-')[2]);
+                    if (this.videoFiles[fileIndex]) {
+                        this.loadVideoFile(this.videoFiles[fileIndex]);
+                        this.lastSelectedValue = e.target.value;
+                    }
+                } else if (e.target.value !== 'no-camera') {
+                    // User selected a camera
+                    await this.startCamera(e.target.value);
+                    this.lastSelectedValue = e.target.value;
+                }
             });
         } catch (error) {
             console.error('Error setting up cameras:', error);
@@ -83,6 +243,12 @@ class App {
                 this.cameraStream.getTracks().forEach(track => track.stop());
             }
             
+            // Clear any video file source
+            if (this.videoElement.src) {
+                this.videoElement.src = '';
+                // Don't revoke URL here as we want to keep videos available
+            }
+            
             // Get new stream
             const constraints = {
                 video: {
@@ -94,6 +260,12 @@ class App {
             
             this.cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
             this.videoElement.srcObject = this.cameraStream;
+            
+            // Reset progress bar to camera mode immediately
+            if (this.progressBar) {
+                this.progressBar.classList.add('camera-active');
+                this.progressBar.style.width = '100%';
+            }
             
             // Wait for video to be ready
             await new Promise(resolve => {
@@ -108,6 +280,9 @@ class App {
             
             // Start motion detection
             this.motionDetector.start();
+            
+            // Update progress bar to show full red (camera mode)
+            this.updateProgressBar();
         } catch (error) {
             console.error('Error starting camera:', error);
             alert('Unable to start camera: ' + error.message);
@@ -129,6 +304,83 @@ class App {
             // Redraw triggers
             this.ui.drawTriggers();
         }
+    }
+
+    handleVideoFileSelection(file) {
+        // Stop any existing camera stream
+        if (this.cameraStream) {
+            this.cameraStream.getTracks().forEach(track => track.stop());
+            this.cameraStream = null;
+        }
+        
+        // Initialize videoFiles array if needed
+        this.videoFiles = this.videoFiles || [];
+        
+        // Add the file to the collection
+        this.videoFiles.push(file);
+        const fileIndex = this.videoFiles.length - 1;
+        
+        // Load the selected video file
+        this.loadVideoFile(file);
+        
+        // Update dropdown with the new video file
+        const cameraSelect = document.getElementById('cameraSelect');
+        
+        // Find the position to insert before "Add video file" option
+        const addVideoOption = Array.from(cameraSelect.options).findIndex(option => 
+            option.value === 'add-video-file');
+        
+        // Create new option for this video
+        const newOption = document.createElement('option');
+        newOption.value = `video-file-${fileIndex}`;
+        newOption.text = `Video: ${file.name}`;
+        
+        // Insert the new option before the "Add video file" option
+        const beforeOption = cameraSelect.options[addVideoOption];
+        cameraSelect.insertBefore(newOption, beforeOption);
+        
+        // Select the newly added video
+        cameraSelect.value = `video-file-${fileIndex}`;
+        this.lastSelectedValue = `video-file-${fileIndex}`;
+        
+        // Notify user about the file not being saved
+        alert('Note: The video file will be used for this session only and will not be stored.');
+    }
+    
+    loadVideoFile(file) {
+        // Set video source to the file
+        const videoURL = URL.createObjectURL(file);
+        this.videoElement.srcObject = null;
+        this.videoElement.src = videoURL;
+        
+        // Ensure loop property is set
+        this.videoElement.loop = true;
+        
+        // Force autoplay
+        this.videoElement.autoplay = true;
+        
+        // Play the video
+        this.videoElement.play().then(() => {
+            console.log('Video playback started successfully');
+            // Set up canvas once video is playing
+            this.resizeCanvas();
+            
+            // Start motion detection
+            this.motionDetector.start();
+            
+            // Initialize progress bar
+            this.updateProgressBar();
+        }).catch(error => {
+            console.error('Error playing video:', error);
+            alert('Unable to play video: ' + error.message);
+        });
+        
+        // Add event listeners to ensure continuous playback
+        this.videoElement.onended = () => {
+            console.log('Video ended event triggered, restarting...');
+            this.videoElement.currentTime = 0;
+            this.videoElement.play().catch(e => console.error('Error restarting video:', e));
+        };
     }
 
     addTrigger(x, y) {
